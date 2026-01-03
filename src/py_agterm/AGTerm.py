@@ -10,6 +10,7 @@ import fcntl
 import termios
 import struct
 from typing import List, Optional
+import logging
 
 # ============================
 # Constants & Regex
@@ -105,12 +106,12 @@ class AGTerm:
         os.close(slave)
 
         # Disable Echo at kernel level
-        try:
-            attr = termios.tcgetattr(self.master_fd)
-            attr[3] = attr[3] & ~termios.ECHO
-            termios.tcsetattr(self.master_fd, termios.TCSANOW, attr)
-        except termios.error:
-            pass
+        # try:
+        #     attr = termios.tcgetattr(self.master_fd)
+        #     attr[3] = attr[3] & ~termios.ECHO
+        #     termios.tcsetattr(self.master_fd, termios.TCSANOW, attr)
+        # except termios.error:
+        #     pass
 
         self._running = True
         self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
@@ -217,5 +218,5 @@ class AGTerm:
 if __name__ == "__main__":
     with AGTerm() as term:
         output = term.send_and_read_until_ready("echo Hello, AGTerm!")
-        print("Received Output:")
-        print(output)
+        logging.info("Received Output:")
+        logging.info(output)
